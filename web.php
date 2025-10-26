@@ -2,10 +2,26 @@
 function esc($s){ return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); }
 function truncate_title($s,$m=60){ return (mb_strlen($s,'UTF-8')>$m)?rtrim(mb_substr($s,0,$m,'UTF-8')).",...":$s; }
 function format_duration($tw){
-  if(!$tw)return"";preg_match('/(\d+)h?/',$tw,$h);preg_match('/(\d+)m?/',$tw,$m);preg_match('/(\d+)s?/',$tw,$s);
-  $H=$h?$h[1]:0;$M=$m?$m[1]:0;$S=$s?$s[1]:0;$t=$H*3600+$M*60+$S;
-  return $H?sprintf("%d:%02d:%02d",$H,$M,$S):sprintf("%d:%02d",$M,$S);
+  if(!$tw) return "";
+  preg_match_all('/(\d+)\s*([hms])/i', $tw, $parts, PREG_SET_ORDER);
+  if(!$parts) return "";
+  $H=$M=$S=0;
+  foreach($parts as $p){
+    $v=(int)$p[1];
+    switch(strtolower($p[2])){
+      case 'h': $H += $v; break;
+      case 'm': $M += $v; break;
+      case 's': $S += $v; break;
+    }
+  }
+  $t = $H*3600 + $M*60 + $S;
+  if($t <= 0) return "";
+  $H = intdiv($t, 3600);
+  $M = intdiv($t % 3600, 60);
+  $S = $t % 60;
+  return $H ? sprintf("%d:%02d:%02d", $H, $M, $S) : sprintf("%d:%02d", $M, $S);
 }
+
 function flag_for_lang($l){$m=['fr'=>'🇫🇷','en'=>'🇬🇧','en-gb'=>'🇬🇧','en-us'=>'🇺🇸','de'=>'🇩🇪','es'=>'🇪🇸','pt'=>'🇵🇹','pt-br'=>'🇧🇷','it'=>'🇮🇹','nl'=>'🇳🇱','ru'=>'🇷🇺','ja'=>'🇯🇵','ko'=>'🇰🇷','zh'=>'🇨🇳','tr'=>'🇹🇷','pl'=>'🇵🇱','sv'=>'🇸🇪','no'=>'🇳🇴','da'=>'🇩🇰','fi'=>'🇫🇮'];$l=strtolower($l??'');return $m[$l]??strtoupper($l);}
 function parse_iso($s){try{return new DateTimeImmutable($s);}catch(Exception){return null;}}
 function is_new($d){if(!$d)return 0;$t=new DateTimeImmutable('today',new DateTimeZone('Europe/Brussels'));$y=$t->sub(new DateInterval('P1D'));$d=$d->setTime(0,0,0);return($d==$t||$d==$y);}
