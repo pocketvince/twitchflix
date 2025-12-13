@@ -40,6 +40,16 @@ BOX_ART_SIZE       = (342, 513)
 GENERIC_PLACEHOLDER = "https://static-cdn.jtvnw.net/ttv-static/404_preview-320x180.jpg"
 ```
 
+## Debug
+if you get the error:
+```shell
+http error for deotoons: HTTP Error 401: Unauthorized
+http error for AVAMind: HTTP Error 401: Unauthorized
+http error for hardisk: HTTP Error 401: Unauthorized
+```
+Your token has expired (+-2 months).
+To renew it, delete the token.txt file and restart the script. It will generate a new one.
+
 
 ## Extra
 Too impatient to watch Twitch replays (not yet available on YouTube),
